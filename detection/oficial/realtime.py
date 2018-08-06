@@ -3,30 +3,49 @@ import numpy as np
 from objeto import Objeto
 
 # Constants of configuration
-MIN_MATCH_COUNT=40
-SIMULATE_REAL_DEVICE=True
-FLANN_INDEX_KDITREE=0
+MIN_MATCH_COUNT=20
+SIMULATE_REAL_DEVICE=False
+FLANN_INDEX_KDITREE=2
+FLANN_INDEX_LSH=6
 VIDEO_WIDTH=960.0
 VIDEO_HEIGHT=540.0
+MATCH_DISTANCE=0.75
+ALGO_TYPE=0 # SIFT=0 , SURF=1 , ORB=2
 
 # Informacoes que devem ser cadastradas e salvas em BD
 objetos=[]
 images=[["unizinco.jpg", "unizinco2.jpg", "unizinco3.jpg"], ["rinosoro.jpg"]]
 img_names=["unizinco", "rinosoro"]
-
-# Criacao dos objetos
-for index,imageArray in enumerate(images):
-    objetos.append(Objeto(img_names[index], imageArray))
+#images=[["calculadora.png"]]
+#img_names=["calculadora"]
 
 # Inicializacao da camera
 cam=cv.VideoCapture(0)
 cam.set(cv.CAP_PROP_FRAME_WIDTH, VIDEO_WIDTH)
 cam.set(cv.CAP_PROP_FRAME_HEIGHT, VIDEO_HEIGHT)
 
-detector=cv.xfeatures2d.SIFT_create()
+if(ALGO_TYPE == 0):
+    detector=cv.xfeatures2d.SIFT_create()
+elif(ALGO_TYPE == 1):
+    detector=cv.xfeatures2d.SURF_create()
+elif(ALGO_TYPE == 2):
+    detector=cv.ORB_create(nfeatures=10000, scaleFactor = 1.2, WTA_K = 2, scoreType=cv.ORB_FAST_SCORE)
 
-flannParam=dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
-flann=cv.FlannBasedMatcher(flannParam,{})
+if(ALGO_TYPE == 0 or ALGO_TYPE == 1):
+    flannParam=dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
+    flann=cv.FlannBasedMatcher(flannParam,{})
+elif(ALGO_TYPE == 2):
+    flann=cv.BFMatcher(cv.NORM_HAMMING)
+    #flannParam= dict(algorithm = FLANN_INDEX_LSH,
+    #                table_number = 12, # 12
+    #                key_size = 20, # 20
+    #                multi_probe_level = 2) #2
+    #search_params = dict(checks=20)
+    #flann=cv.FlannBasedMatcher(flannParam,search_params)
+
+# Criacao dos objetos
+for index,imageArray in enumerate(images):
+    objetos.append(Objeto(img_names[index], imageArray, detector))
 
 while True:
     ret, QueryImgBGR=cam.read()
@@ -40,7 +59,7 @@ while True:
             matches=flann.knnMatch(queryDesc,td,k=2)
 
             for m,n in matches:
-                if(m.distance<0.70*n.distance):
+                if(m.distance<MATCH_DISTANCE*n.distance):
                     goodMatch.append(m)
     
             if(len(goodMatch)>MIN_MATCH_COUNT):

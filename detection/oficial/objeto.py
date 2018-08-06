@@ -1,10 +1,8 @@
 import cv2 as cv
 from random import randint
 
-detector=cv.xfeatures2d.SIFT_create()
-
 class Objeto:
-    def __init__(self, obj_name, img_array):
+    def __init__(self, obj_name, img_array, detector):
         self.file_names=img_array
         self.name=obj_name
         self.color=(randint(0, 255), randint(0, 255), randint(0, 255))
@@ -13,9 +11,9 @@ class Objeto:
         self.trainDescs=[]
 
         for image in img_array:
-            self.appendTrainImages(image)
+            self.appendTrainImages(image, detector)
 
-    def appendTrainImages(self, image):
+    def appendTrainImages(self, image, detector):
         trainImage=cv.imread(image,0)
         self.trainImgs.append(trainImage)
         trainKP,trainDesc=detector.detectAndCompute(trainImage,None)
