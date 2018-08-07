@@ -3,21 +3,21 @@ import numpy as np
 from objeto import Objeto
 
 # Constants of configuration
-MIN_MATCH_COUNT=20
+MIN_MATCH_COUNT=30
 SIMULATE_REAL_DEVICE=False
 FLANN_INDEX_KDITREE=2
 FLANN_INDEX_LSH=6
 VIDEO_WIDTH=960.0
 VIDEO_HEIGHT=540.0
 MATCH_DISTANCE=0.75
-ALGO_TYPE=0 # SIFT=0 , SURF=1 , ORB=2
+ALGO_TYPE=3 # SIFT=0 , SURF=1 , ORB=2, BRISK=3
 
 # Informacoes que devem ser cadastradas e salvas em BD
 objetos=[]
-images=[["unizinco.jpg", "unizinco2.jpg", "unizinco3.jpg"], ["rinosoro.jpg"]]
-img_names=["unizinco", "rinosoro"]
-#images=[["calculadora.png"]]
-#img_names=["calculadora"]
+#images=[["unizinco.jpg", "unizinco2.jpg", "unizinco3.jpg"], ["rinosoro.jpg"]]
+#img_names=["unizinco", "rinosoro"]
+images=[["calculadora.png"]]
+img_names=["calculadora"]
 
 # Inicializacao da camera
 cam=cv.VideoCapture(0)
@@ -29,12 +29,14 @@ if(ALGO_TYPE == 0):
 elif(ALGO_TYPE == 1):
     detector=cv.xfeatures2d.SURF_create()
 elif(ALGO_TYPE == 2):
-    detector=cv.ORB_create(nfeatures=10000, scaleFactor = 1.2, WTA_K = 2, scoreType=cv.ORB_FAST_SCORE)
+    detector=cv.ORB_create(nfeatures=1000, scaleFactor = 1.2, WTA_K = 2, scoreType=cv.ORB_FAST_SCORE)
+elif(ALGO_TYPE == 3):
+    detector=cv.BRISK_create()
 
 if(ALGO_TYPE == 0 or ALGO_TYPE == 1):
     flannParam=dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
     flann=cv.FlannBasedMatcher(flannParam,{})
-elif(ALGO_TYPE == 2):
+elif(ALGO_TYPE == 2 or ALGO_TYPE == 3):
     flann=cv.BFMatcher(cv.NORM_HAMMING)
     #flannParam= dict(algorithm = FLANN_INDEX_LSH,
     #                table_number = 12, # 12
