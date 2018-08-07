@@ -3,7 +3,7 @@ import numpy as np
 from objeto import Objeto
 
 # Constants of configuration
-MIN_MATCH_COUNT=30
+MIN_MATCH_COUNT=22
 SIMULATE_REAL_DEVICE=False
 FLANN_INDEX_KDITREE=2
 FLANN_INDEX_LSH=6
@@ -14,10 +14,10 @@ ALGO_TYPE=3 # SIFT=0 , SURF=1 , ORB=2, BRISK=3
 
 # Informacoes que devem ser cadastradas e salvas em BD
 objetos=[]
-#images=[["unizinco.jpg", "unizinco2.jpg", "unizinco3.jpg"], ["rinosoro.jpg"]]
-#img_names=["unizinco", "rinosoro"]
-images=[["calculadora.png"]]
-img_names=["calculadora"]
+images=[["unizinco.jpg", "unizinco2.jpg", "unizinco3.jpg"], ["rinosoro.jpg"]]
+img_names=["unizinco", "rinosoro"]
+#images=[["calculadora.png"]]
+#img_names=["calculadora"]
 
 # Inicializacao da camera
 cam=cv.VideoCapture(0)
@@ -49,39 +49,44 @@ elif(ALGO_TYPE == 2 or ALGO_TYPE == 3):
 for index,imageArray in enumerate(images):
     objetos.append(Objeto(img_names[index], imageArray, detector))
 
+
 while True:
     ret, QueryImgBGR=cam.read()
     QueryImg=cv.cvtColor(QueryImgBGR,cv.COLOR_BGR2GRAY)
     queryKP,queryDesc=detector.detectAndCompute(QueryImg,None)
     
     # Percorre os objetos e os seus descritores
-    for i,objeto in enumerate(objetos):
-        for j,td in enumerate(objeto.trainDescs):
+    for obj_index, objeto in enumerate(objetos):
+        for obj_desc_index, obj_descriptor in enumerate(objeto.trainDescs):
             goodMatch=[]
-            matches=flann.knnMatch(queryDesc,td,k=2)
+            matches=flann.knnMatch(queryDesc, obj_descriptor, k=2)
 
-            for m,n in matches:
-                if(m.distance<MATCH_DISTANCE*n.distance):
+            for m, n in matches:
+                if(m.distance < (MATCH_DISTANCE * n.distance)):
                     goodMatch.append(m)
     
-            if(len(goodMatch)>MIN_MATCH_COUNT):
-                tp=[]
-                qp=[]
+            if(len(goodMatch) > MIN_MATCH_COUNT):
+                obj_points=[]
+                video_points=[]
                 for m in goodMatch:
-                    tp.append(objeto.trainKPs[j][m.trainIdx].pt)
-                    qp.append(queryKP[m.queryIdx].pt)
-                tp,qp=np.float32((tp,qp))
-                H,status=cv.findHomography(tp,qp,cv.RANSAC,3.0)
-                h,w=objeto.trainImgs[j].shape
-                trainBorder=np.float32([[[0,0],[0,h-1],[w-1,h-1],[w-1,0]]])
-                queryBorder=cv.perspectiveTransform(trainBorder,H)
+                    obj_points.append(objeto.trainKPs[obj_desc_index][m.trainIdx].pt)
+                    video_points.append(queryKP[m.queryIdx].pt)
+                obj_points, video_points = np.float32((obj_points,video_points))
+                homog, _ = cv.findHomography(obj_points, video_points,cv.RANSAC, 3.0)
+                obj_height, obj_width = objeto.trainImgs[obj_desc_index].shape
+                trainBorder = np.float32([[ [0,0], [0,obj_height-1], [obj_width-1,obj_height-1], [obj_width-1,0] ]])
+                queryBorder = cv.perspectiveTransform(trainBorder, homog)
                 corners=np.int32(queryBorder)
                 # Desenha o quadrado ao redor do objeto
                 cv.polylines(QueryImgBGR, [np.int32(queryBorder)], True, objeto.color, 3)
                 # Escreve o texto do objeto
                 cv.putText(QueryImgBGR, objeto.name, (corners[0][0][0], corners[0][0][1]-10), 2, 1, objeto.color, 2)
+
+                print "Found object %d => Image num: %d - %s"%(obj_index+1, obj_desc_index+1, images[obj_index][obj_desc_index])
+                # Break for loop because already found the object
+                break
             else:
-                print "Not Enough match found for object %d- %d/%d"%(i+1,len(goodMatch),MIN_MATCH_COUNT)
+                print "Not Enough match found for object %d - %d/%d"%(obj_index+1, len(goodMatch), MIN_MATCH_COUNT)
 
     if SIMULATE_REAL_DEVICE:
         videoWidth = int(cam.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -91,10 +96,10 @@ while True:
 
     # Abre a janela com o video
     cv.imshow('Reconhecimento de Objetos', QueryImgBGR)
+
     # Para sair pressione a tecla "q"
-    if cv.waitKey(10)==ord('q'):
+    if cv.waitKey(10) == ord('q'):
         break
 
 cam.release()
 cv.destroyAllWindows()
-
