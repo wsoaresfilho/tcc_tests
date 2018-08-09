@@ -1,6 +1,8 @@
 import cv2 as cv
 from random import randint
 
+RELATIVE_PATH = "../../imgsamples/"
+
 class Objeto:
     def __init__(self, obj_name, img_array, detector):
         self.file_names=img_array
@@ -11,7 +13,7 @@ class Objeto:
         self.trainDescs=[]
 
         for image in img_array:
-            self.appendTrainImages(image, detector)
+            self.appendTrainImages(RELATIVE_PATH+image, detector)
 
     def appendTrainImages(self, image, detector):
         trainImage=cv.imread(image,0)
