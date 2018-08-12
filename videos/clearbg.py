@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 from scipy.signal import savgol_filter
 
-IMG_FILE = "../imgsamples/sanfoneiro.jpeg"
 SMOOTH_CONTOUR = True
 
 def getSobel (channel):
@@ -51,9 +50,7 @@ def findSignificantContours (img, sobel_8u):
     significant.sort(key=lambda x: x[1])
     return [x[0] for x in significant];
 
-def segment (path):
-    img = cv2.imread(path)
-
+def segment(img):
     blurred = cv2.GaussianBlur(img, (5, 5), 0) # Remove noise
 
     # Edge operator
@@ -88,14 +85,13 @@ def segment (path):
     rgba = [b,g,r, alpha]
     final_img = cv2.merge(rgba,4)
 
+    return final_img
+
     # Save the new image with the object and a transparent background
-    cv2.imwrite('..\imgsamples\obj_new.png', final_img);
+    #cv2.imwrite('..\imgsamples\obj_new.png', final_img);
 
     # Show the new image
-    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-    cv2.imshow('image', final_img)
+    #cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image', final_img)
     #cv2.resizeWindow('image', 600,600)
-    cv2.waitKey()
-
-
-segment(IMG_FILE)
+    #cv2.waitKey()

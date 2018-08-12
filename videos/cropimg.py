@@ -1,4 +1,6 @@
 import cv2
+import time
+from clearbg import segment
 
 # Mouse selection status
 selection = False
@@ -127,7 +129,14 @@ def crop(win_name, image_path):
                 break
             elif k == ord('p') or k == enter_keycode:
                 if len(crop_img)>4:
-                    cv2.imwrite('teste.png', crop_img)
+                    ts = time.time()
+                    img_name = "../imgsamples/" + "photo_cropped_{}.png".format(ts)
+                    cv2.imwrite(img_name, crop_img)
+                    print("Cropped image saved! => Name: " + img_name)
+            elif k == ord('r'):
+                if len(crop_img)>4:
+                    nobg_img = segment(crop_img)
+                    cv2.imshow(window_crop_name, nobg_img)
 
     else:
         print 'Please Check The Path of Input File'

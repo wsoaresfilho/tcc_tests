@@ -25,7 +25,7 @@ while True:
     elif k%256 == 32:
         # SPACE pressed
         ts = time.time()
-        img_name = "opencv_frame_{}.png".format(ts)
+        img_name = "../imgsamples/" + "photo_{}.png".format(ts)
         cv2.imwrite(img_name, frame)
         print("{} written!".format(img_name))
 
