@@ -117,6 +117,9 @@ class CropApp(Widget):
     def btncropsave(self, instance=None):
         self.clock.cancel()
         self.saveImage(self.img_cut)
+        self.filename.text = ''
+        self.btnActionToPhoto()
+        self.acionaCamera()
 
     def crop(self, input_img):
         # Check if image is loaded
@@ -216,6 +219,8 @@ class CropApp(Widget):
             cv2.destroyAllWindows()
 
     def btnexit(self, instance):
+        self.filename.text = ''
+        self.btnActionToPhoto()
         self.clock.cancel()
         cv2.destroyAllWindows()
         self.capture = None
