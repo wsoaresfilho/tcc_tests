@@ -4,11 +4,11 @@ import numpy as np
 #image path
 imageDir = "objimages/"
 
-def getObjects():
-    #valid extensions
-    valid_image_extensions = [".jpg", ".jpeg", ".png"]
-    valid_image_extensions = [item.lower() for item in valid_image_extensions]
+#valid extensions
+valid_image_extensions = [".jpg", ".jpeg", ".png"]
+valid_image_extensions = [item.lower() for item in valid_image_extensions]
 
+def getObjects():
     image_path_list = []
     obj_list = []
     obj_dict_list = []
@@ -43,9 +43,12 @@ def objectsExist():
 
 def clearObjects():
     for the_file in os.listdir(imageDir):
-        file_path = os.path.join(imageDir, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+        extension = os.path.splitext(the_file)[1]
+
+        if extension.lower() in valid_image_extensions:
+            file_path = os.path.join(imageDir, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
