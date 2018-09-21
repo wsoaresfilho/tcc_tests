@@ -1,13 +1,14 @@
 import os, os.path
 import numpy as np
 
-#image path
+# Images Folder Path
 imageDir = "objimages/"
 
-#valid extensions
+# Images valid extensions
 valid_image_extensions = [".jpg", ".jpeg", ".png"]
 valid_image_extensions = [item.lower() for item in valid_image_extensions]
 
+# Helper function to get all the objects based on the images 
 def getObjects():
     image_path_list = []
     obj_list = []
@@ -22,25 +23,29 @@ def getObjects():
             continue
         image_path_list.append(os.path.join(imageDir, file))
         obj_list.append(filename.split('_')[0])
-        #image_path_list.append(file)
 
+    # get only the unique objects
     obj_list = np.unique(obj_list).tolist()
 
+    # get the objects name
     for name in obj_list:
         images = []
         for image in image_path_list:
             if(name == image.split('_')[0].split('/')[1]):
                 images.append(image)
         
+        # create the dict with the obj name and image
         obj_dict = {'name': name.replace('@', ' '), 'images': images}
         obj_dict_list.append(obj_dict)
     
     return obj_dict_list
 
+# Helper function to check the objects folder is empty
 def objectsExist():
     obj_dict_list = getObjects()
     return len(obj_dict_list) > 0
 
+# Helper function to clear the objects folder
 def clearObjects():
     for the_file in os.listdir(imageDir):
         extension = os.path.splitext(the_file)[1]

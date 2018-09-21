@@ -2,14 +2,17 @@ import numpy as np
 import cv2
 from scipy.signal import savgol_filter
 
+# Config flag to smooth the obj contour
 SMOOTH_CONTOUR = True
 
+# Function to get the sobel
 def getSobel (channel):
     sobelx = cv2.Sobel(channel, cv2.CV_16S, 1, 0, borderType=cv2.BORDER_REPLICATE)
     sobely = cv2.Sobel(channel, cv2.CV_16S, 0, 1, borderType=cv2.BORDER_REPLICATE)
     sobel = np.hypot(sobelx, sobely)
     return sobel
 
+# Function to find the significant contours
 def findSignificantContours (img, sobel_8u):
     image, contours, heirarchy = cv2.findContours(sobel_8u, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -28,7 +31,7 @@ def findSignificantContours (img, sobel_8u):
     for tupl in level1:
         contour = contours[tupl[0]]
 
-        ## Use Savitzky-Golay filter to smoothen contour.
+        # Use Savitzky-Golay filter to smoothen contour
         if(SMOOTH_CONTOUR):
           window_size = int(round(min(img.shape[0], img.shape[1]) * 0.05)) # Consider each window to be 5% of image dimensions
           savgol_mode = 'mirror' # mirror, constant, wrap, nearest
@@ -48,8 +51,10 @@ def findSignificantContours (img, sobel_8u):
     significant.sort(key=lambda x: x[1])
     return [x[0] for x in significant];
 
-def segment(img):
-    blurred = cv2.GaussianBlur(img, (5, 5), 0) # Remove noise
+# The main funtion that will be exported to do the image background segmentation
+def bgSegmentation(img):
+    # Remove noise
+    blurred = cv2.GaussianBlur(img, (5, 5), 0)
 
     # Edge operator
     sobel = np.max( np.array([ getSobel(blurred[:,:, 0]), getSobel(blurred[:,:, 1]), getSobel(blurred[:,:, 2]) ]), axis=0 )
@@ -60,9 +65,6 @@ def segment(img):
     # Zero any values less than mean. This reduces a lot of noise.
     sobel[sobel <= mean] = 0
     sobel[sobel > 255] = 255
-
-    #cv2.imwrite('sobel.png', sobel);
-
     sobel_8u = np.asarray(sobel, np.uint8)
 
     # Find contours
@@ -84,12 +86,3 @@ def segment(img):
     final_img = cv2.merge(rgba,4)
 
     return final_img
-
-    # Save the new image with the object and a transparent background
-    #cv2.imwrite('..\imgsamples\obj_new.png', final_img);
-
-    # Show the new image
-    #cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-    #cv2.imshow('image', final_img)
-    #cv2.resizeWindow('image', 600,600)
-    #cv2.waitKey()

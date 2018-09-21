@@ -18,9 +18,7 @@ from config import Config
 from getobjects import objectsExist
 from kivy.clock import Clock
 
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
+# Creating the main menu screen with kivy language
 Builder.load_string("""
 <MenuScreen>:
     BoxLayout:
@@ -30,7 +28,6 @@ Builder.load_string("""
             Color:
                 rgba: .1, .3, .7, 1
             Rectangle:
-                # self here refers to the widget i.e BoxLayout
                 pos: self.pos
                 size: self.size
 
@@ -79,7 +76,7 @@ Builder.load_string("""
                 font_size: 36
 """)
 
-# Declare both screens
+# Declare screens classes
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
@@ -108,26 +105,29 @@ class AddObjScreen(Screen):
         super(AddObjScreen, self).__init__(**kwargs)
         self.add_widget(crop_app.build())
 
+# Function to verify if the objects folder is empty
 def hasEmptyObjects():
     return not objectsExist()
 
-def voltarMenu():
+# Function to go back to the main menu screen
+def goBackToMenu():
     global sm
     sm.current = 'menu'
     sm.transition.direction = 'right'
 
 # Initialize Apps
-config_app = Config(voltarMenu)
-detect_app = DetectionApp(config_app, voltarMenu)
-crop_app = CropApp(voltarMenu, config_app)
+config_app = Config(goBackToMenu)
+detect_app = DetectionApp(config_app, goBackToMenu)
+crop_app = CropApp(goBackToMenu, config_app)
 
-# Create the screen manager
+# Create the screen manager and add all the screens
 sm = ScreenManager()
 sm.add_widget(MenuScreen(name='menu'))
 sm.add_widget(ConfigScreen(name='config'))
 sm.add_widget(DetectObjScreen(name='detection'))
 sm.add_widget(AddObjScreen(name='addobj'))
 
+# MainApp class
 class MainApp(App):
     title = 'Object Detection App'
 
