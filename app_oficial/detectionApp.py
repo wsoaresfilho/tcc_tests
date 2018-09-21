@@ -88,4 +88,5 @@ class DetectionApp(Widget):
             texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
             texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
             
-            self.video_img.texture = textur1 #apresenta a imagem
+            # Updates the image
+            self.video_img.texture = texture
