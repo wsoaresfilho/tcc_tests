@@ -99,9 +99,9 @@ class CropApp(Widget):
 
     def startJob(self, instance=None):
         # Creates a video capturing
-        self.videoCapture = cv2.VideoCapture(0)
-        self.videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH,960)
-        self.videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT,540)
+        self.videoCapture = cv2.VideoCapture(self.config.camera_device)
+        self.videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.video_width)
+        self.videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.video_height)
         Logger.info('Camera: Video Width: %s' %self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH))
         Logger.info('Camera: Video Height: %s' %self.videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT))
 

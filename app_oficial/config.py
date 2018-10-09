@@ -17,12 +17,13 @@ from myObject import MyObject
 from getobjects import getObjects, clearObjects
 
 # Default configuration values
-VIDEO_WIDTH=960.0
-VIDEO_HEIGHT=540.0
+CAMERA_DEVICE = 0 # Setset which camera use if there is more than one
+VIDEO_WIDTH = 960.0
+VIDEO_HEIGHT = 540.0
 ALGOS_LIST = ['SIFT' , 'SURF', 'ORB', 'BRISK', 'KAZE', 'AKAZE']
-FLANN_INDEX_KDITREE=2
-MIN_MATCH_COUNT=30
-MATCH_DISTANCE=0.75
+FLANN_INDEX_KDITREE = 2
+MIN_MATCH_COUNT = 30
+MATCH_DISTANCE = 0.75
 
 # Function that returns the detector and the matcher by the index
 def getDetector(index):
@@ -59,6 +60,7 @@ class Config(BoxLayout):
 
         self.video_width = VIDEO_WIDTH
         self.video_height = VIDEO_HEIGHT
+        self.camera_device = CAMERA_DEVICE
 
         self.detector_index = 3 # Using BRISK as default value
         self.setDetector()

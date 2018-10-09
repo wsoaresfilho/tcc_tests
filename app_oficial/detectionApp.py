@@ -48,10 +48,10 @@ class DetectionApp(Widget):
         Logger.info('Detection: Started Realtime Object Detection!')
 
         # Creates an object to capture the video
-        self.capture = cv2.VideoCapture(0)
+        self.capture = cv2.VideoCapture(self.config.camera_device)
         # Sets the size of the camera image
-        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH,960)
-        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT,540)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.video_width)
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.video_height)
 
         # Create a clock to run the video - 30 frames per sec
         self.clock = Clock.schedule_interval(self.updateVideoImage, 1.0/30.0)
