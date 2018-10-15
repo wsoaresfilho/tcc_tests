@@ -6,6 +6,7 @@ WINDOW_WIDTH = 960
 WINDOW_HEIGHT = 675
 Config.set('graphics', 'width', WINDOW_WIDTH)
 Config.set('graphics', 'height', WINDOW_HEIGHT)
+Config.set('graphics', 'resizable', False)
 
 from kivy.app import App
 from kivy.lang import Builder
