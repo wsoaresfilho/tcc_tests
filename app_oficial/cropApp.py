@@ -22,32 +22,38 @@ from functools import partial
 selection = False
 # Region Of Interest => will contain the coordinates for the selection
 roi = []
+# Keep the video size to calculate the difference if window and video size
+VIDEO_WIDTH = 0
+VIDEO_HEIGHT = 0
 
 # Custom image class that handles the mouse events to do the cropping
 class MyImage(Image):
     def on_touch_down(self, touch):
-        global roi, selection
+        global roi, selection, VIDEO_WIDTH, VIDEO_HEIGHT
         touch.grab(self)
         x, y = touch.pos
-        y = Window.height - y
+        y = Window.height - ((Window.height*0.8 - VIDEO_HEIGHT)/2) - y
+        x = x - (Window.width - VIDEO_WIDTH)/2
         selection = True
         roi = [x, y, x, y]
 
     def on_touch_move(self, touch):
-        global roi, selection
+        global roi, selection, VIDEO_WIDTH, VIDEO_HEIGHT
         if touch.grab_current is self:
             x, y = touch.pos
             if selection == True:
-                y = Window.height - y
+                y = Window.height - ((Window.height*0.8 - VIDEO_HEIGHT)/2) - y
+                x = x - (Window.width - VIDEO_WIDTH)/2
                 roi[2] = x
                 roi[3] = y
         
     def on_touch_up(self, touch):
-        global roi, selection
+        global roi, selection, VIDEO_WIDTH, VIDEO_HEIGHT
         if touch.grab_current is self:
             selection = False
             x, y = touch.pos
-            y = Window.height - y
+            y = Window.height - ((Window.height*0.8 - VIDEO_HEIGHT)/2) - y
+            x = x - (Window.width - VIDEO_WIDTH)/2
             roi[2] = x
             roi[3] = y
             touch.ungrab(self)
@@ -98,12 +104,16 @@ class CropApp(Widget):
         return self.layout
 
     def startJob(self, instance=None):
+        global VIDEO_WIDTH, VIDEO_HEIGHT
         # Creates a video capturing
         self.videoCapture = cv2.VideoCapture(self.config.camera_device)
         self.videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.video_width)
         self.videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.video_height)
         Logger.info('Camera: Video Width: %s' %self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH))
         Logger.info('Camera: Video Height: %s' %self.videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # Sets the real video size to calculate the difference between the video and the window
+        VIDEO_HEIGHT = self.videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        VIDEO_WIDTH = self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)
 
         self.initializeCamera()
  
@@ -189,12 +199,13 @@ class CropApp(Widget):
                 y1 = roi[1]
                 y2 = roi[3]
 
+            # Create a cropped image Window
+            cv2.namedWindow(window_crop_name, cv2.WINDOW_AUTOSIZE)
+
             # Crop clone image
             crop_img = clone[y1: y2, x1: x2]
             # check if crop_img is not empty
             if len(crop_img)>4:
-                # Create a cropped image Window
-                cv2.namedWindow(window_crop_name, cv2.WINDOW_AUTOSIZE)
                 # Show image in window
                 cv2.imshow(window_crop_name, crop_img)
                 self.img_cut = crop_img
