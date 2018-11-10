@@ -132,3 +132,7 @@ pip install pyttsx3
 sudo apt-get install gstreamer1.0-libav
 
 sudo apt-get install gstreamer1.0-libav-dbg
+
+sudo apt-get install espeak python-espeak
+
+sudo apt-get install xclip
