@@ -1,0 +1,134 @@
+
+## These are the necessary steps to install the application on Ubuntu 18.04
+
+cd ~
+
+sudo apt-get remove python-opencv
+
+sudo apt-get install cmake
+
+sudo apt-get install python-dev
+
+sudo apt-get install python-numpy
+
+sudo apt-get install build-essential
+
+sudo apt-get install unzip
+
+sudo apt-get install pkg-config
+
+sudo apt-get install libjpeg-dev libpng-dev libtiff-dev
+
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
+
+sudo apt-get install libxvidcore-dev libx264-dev
+
+sudo apt-get install libgtk-3-dev
+
+sudo apt-get install ffmpeg
+
+sudo apt-get install libgstreamer-plugins-base1.0-dev
+
+sudo apt install gcc
+
+sudo apt install g++
+
+sudo apt-get install libatlas-base-dev gfortran
+
+wget -O opencv.zip https://github.com/opencv/opencv/archive/3.4.3.zip
+
+pip uninstall opencv-contrib-python
+
+wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/3.4.3.zip
+
+unzip opencv.zip
+
+unzip opencv_contrib.zip
+
+wget https://bootstrap.pypa.io/get-pip.py
+
+sudo python2.7 get-pip.py
+
+sudo pip install virtualenv virtualenvwrapper
+
+sudo rm -rf ~/get-pip.py ~/.cache/pip
+
+echo -e "\n# virtualenv and virtualenvwrapper" >> ~/.bashrc
+
+echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2" >> ~/.bashrc
+
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+
+?????????????????????????????
+
+echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+
+source ~/.bashrc
+
+mkvirtualenv cv -p python2.7
+
+workon cv
+
+pip install numpy
+
+cd ~/opencv-3.4.3/
+
+mkdir build
+
+cd build
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D WITH_TBB=ON \
+    -D WITH_V4L=ON \
+    -D WITH_LIBV4L=ON \
+    -D WITH_FFMPEG=1 \
+    -D WITH_OPENGL=ON \
+    -D WITH_XINE=ON \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.4.3/modules \
+    -D PYTHON_EXECUTABLE=~/.virtualenvs/cv/bin/python \
+    -D BUILD_EXAMPLES=ON ..
+
+
+make
+
+sudo make install
+
+sudo ldconfig
+
+pkg-config --modversion opencv
+
+cd ~/.virtualenvs/cv/lib/python2.7/site-packages/
+
+ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
+
+pip install Cython==0.28.2
+
+pip install kivy
+
+sudo apt-get install -y \
+    mercurial \
+    ffmpeg \
+    libsdl-image1.2-dev \
+    libsdl-mixer1.2-dev \
+    libsdl-ttf2.0-dev \
+    libsmpeg-dev \
+    libsdl1.2-dev \
+    libportmidi-dev \
+    libswscale-dev \
+    libavformat-dev \
+    libavcodec-dev \
+    zlib1g-dev
+
+pip install hg+http://bitbucket.org/pygame/pygame
+
+pip install scipy
+
+pip install pyttsx3
+
+sudo apt-get install gstreamer1.0-libav
+
+sudo apt-get install gstreamer1.0-libav-dbg
