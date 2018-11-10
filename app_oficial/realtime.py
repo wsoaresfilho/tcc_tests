@@ -13,6 +13,8 @@ audio_threads=[]
 
 # Initialize the TTS audio lib
 speaker = tts.init()
+speaker.setProperty('voice', 'english-us') # uses an american voice
+#speaker.setProperty('voice', 'brazil') # uses a brazilian voice
 
 # Functions that plays/speaks the obj name (audio)
 def play_audio(name):
