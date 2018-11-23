@@ -136,3 +136,19 @@ sudo apt-get install gstreamer1.0-libav-dbg
 sudo apt-get install espeak python-espeak
 
 sudo apt-get install xclip
+
+sudo apt-get install v4l-utils
+
+================================================
+
+lsusb
+
+lsusb -s 002:007 -v | egrep "Width|Height"
+
+v4l2-ctl --list-devices
+
+v4l2-ctl --list-formats-ext
+
+v4l2-ctl --set-fmt-video=width=960,height=540 -d /dev/video1
+
+v4l2-ctl -v width=960,height=540 -d /dev/video1

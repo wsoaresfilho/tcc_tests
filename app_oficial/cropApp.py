@@ -80,7 +80,7 @@ class CropApp(Widget):
         button_exit.bind(on_press=self.btnexit)
 
         # Creates the obj name input area
-        inputLabel = Label(text='[color=2a7cdf]Nome do objeto:[/color]', font_size=30, size_hint=(0.333,1), markup=True)
+        inputLabel = Label(text='[color=2a7cdf]Object name:[/color]', font_size=30, size_hint=(0.333,1), markup=True)
         self.obj_file_name = TextInput(multiline=False, font_size=30, background_color=[.9, .9, .9, .9], padding=15, size_hint=(0.667,1))
 
         # Creates a BoxLayout to contain the obj name input
