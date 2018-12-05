@@ -86,29 +86,33 @@ def getDetection(videoimg, config):
                 
                 obj_points, video_points = np.float32((obj_points,video_points))
                 homog, _ = cv.findHomography(obj_points, video_points, cv.RANSAC, 3.0)
-                # Get the obj height and width
-                obj_height, obj_width = item_obj.objImages[obj_desc_index].shape
-                # Get the borders and corners
-                objBorder = np.float32([[ [0,0], [0,obj_height-1], [obj_width-1,obj_height-1], [obj_width-1,0] ]])
-                videoBorder = cv.perspectiveTransform(objBorder, homog)
-                corners = np.int32(videoBorder)
-                # Gets the closest points to the center
-                closest_points[obj_index] = getClosestPoint(corners[0], [config.video_width/2, config.video_height/2])
 
-                # Draws a square around the detected obj
-                cv.polylines(cameraImgBGR, [np.int32(videoBorder)], True, item_obj.color, 3)
-                # Writes the detected obj name above the square
-                cv.putText(cameraImgBGR, item_obj.name, (corners[0][0][0], corners[0][0][1]-10), 2, 1, item_obj.color, 2)
+                if( homog is not None ):
+                    # Get the obj height and width
+                    obj_height, obj_width = item_obj.objImages[obj_desc_index].shape
+                    # Get the borders and corners
+                    objBorder = np.float32([[ [0,0], [0,obj_height-1], [obj_width-1,obj_height-1], [obj_width-1,0] ]])
+                    videoBorder = cv.perspectiveTransform(objBorder, homog)
+                    corners = np.int32(videoBorder)
+                    # Gets the closest points to the center
+                    closest_points[obj_index] = getClosestPoint(corners[0], [config.video_width/2, config.video_height/2])
 
-                # If audio config is set
-                if(config.playAudio):
-                    # only plays the audio if there is no audio already playing
-                    t = threading.Thread(target=play_audio, args=(item_obj.name,))
-                    audio_threads[obj_index] = t
+                    # Draws a square around the detected obj
+                    cv.polylines(cameraImgBGR, [np.int32(videoBorder)], True, item_obj.color, 3)
+                    # Writes the detected obj name above the square
+                    cv.putText(cameraImgBGR, item_obj.name, (corners[0][0][0], corners[0][0][1]-10), 2, 1, item_obj.color, 2)
 
-                Logger.info('Detection: Found object %d => Image num: %d - %s' %(obj_index + 1, obj_desc_index + 1, item_obj.name))
-                # If an obj was already found there is no need to look for the same obj again, so break the loop
-                break
+                    # If audio config is set
+                    if(config.playAudio):
+                        # only plays the audio if there is no audio already playing
+                        t = threading.Thread(target=play_audio, args=(item_obj.name,))
+                        audio_threads[obj_index] = t
+
+                    Logger.info('Detection: Found object %d => Image num: %d - %s' %(obj_index + 1, obj_desc_index + 1, item_obj.name))
+                    # If an obj was already found there is no need to look for the same obj again, so break the loop
+                    break
+                else:
+                    Logger.info('BAD DETECTION!')
             else:
                 Logger.info('Detection: Not Enough match found for object %d - %d/%d' %(obj_index + 1, len(goodMatch), minMatches))
                 

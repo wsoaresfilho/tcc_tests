@@ -11,6 +11,7 @@ from kivy.uix.label import Label
 from kivy.core.window import Window
 #Differents logging levels are available : trace, debug, info, warning, error and critical.
 from kivy.logger import Logger
+from kivy.properties import BooleanProperty
  
 import cv2
 import numpy as np
@@ -75,7 +76,7 @@ class CropApp(Widget):
         self.photo_action_btn.bind(on_press=self.btntakephoto)
         self.save_action_btn = Button(text='Save', font_size=30, background_normal='', background_color=[.3, .6, .3, 1], size_hint=(0.33,1))
         self.save_action_btn.bind(on_press=self.btncropsave)
-        self.save_action_btn.disabled = True
+        self.save_action_btn.disabled = BooleanProperty(True)
         button_exit = Button(text='Back to Menu', font_size=30, background_normal='', background_color=[.5, .2, .2, 1], size_hint=(0.33,1))
         button_exit.bind(on_press=self.btnexit)
 
@@ -152,11 +153,13 @@ class CropApp(Widget):
             Logger.warning('Image File: Please Check The Path of Input File')
 
     def btnActionSetToCameraMode(self):
+        global roi
         # Changes the action button back to the Camera mode
         self.photo_action_btn.text = "Camera"
         self.photo_action_btn.background_color=[.2, .5, .5, 1]
         self.photo_action_btn.unbind(on_press=self.btntakephoto)
         self.photo_action_btn.bind(on_press = self.initializeCamera)
+        roi = []
 
     def btnActionSetToTakePhotoMode(self):
         # Changes the action button back to the Take Photo mode
@@ -218,7 +221,6 @@ class CropApp(Widget):
                     self.save_action_btn.disabled = False
             else:
                 self.save_action_btn.disabled = True
-                
 
         # Captures a key press
         k = cv2.waitKey(1)
@@ -263,6 +265,7 @@ class CropApp(Widget):
         self.clock = Clock.schedule_interval(self.updateVideoImage, 1.0/30.0)
 
     def updateVideoImage(self, dt):
+        self.save_action_btn.disabled = True
         # Captures the video frame and shows it
         ret, frame = self.videoCapture.read()
         self.showImage(frame)

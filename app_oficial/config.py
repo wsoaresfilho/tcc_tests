@@ -20,7 +20,7 @@ from getobjects import getObjects, clearObjects
 # Default configuration values
 CAMERA_DEVICE = 0 # Sets which camera use if there is more than one
 VIDEO_WIDTH = 960.0
-VIDEO_HEIGHT = 540.0
+VIDEO_HEIGHT = 544.0
 ALGOS_LIST = ['SIFT' , 'SURF', 'ORB', 'BRISK', 'KAZE', 'AKAZE']
 FLANN_INDEX_KDITREE = 2
 MIN_MATCH_COUNT = 30
